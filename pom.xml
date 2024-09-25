@@ -10,8 +10,8 @@
 	</parent>
 	<groupId>groupeisi.com</groupId>
 	<artifactId>accountmanagement</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>accountManagement</name>
+	<version>0.1</version>
+	<name>accountmanagement</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
