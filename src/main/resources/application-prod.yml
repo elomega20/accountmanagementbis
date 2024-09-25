@@ -1,0 +1,23 @@
+
+server:
+  port: 8086
+  servlet:
+    context-path: /account-management
+
+spring:
+  application:
+    name: accountManagement
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bd_securite_si
+    username: postgres
+    password: postgres
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
