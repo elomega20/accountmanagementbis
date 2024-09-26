@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk22:alpine-jre
+FROM adoptopenjdk/openjdk17:alpine-jre
 
 ARG JAR_FILE=target/accountmanagement.jar
 
