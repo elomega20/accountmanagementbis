@@ -79,7 +79,7 @@ def sendEmail(recipients) {
     mail(
             to: recipients,
             subject: "Build ${env.BUILD_NUMBER} - ${currentBuild.currentResult} - (${currentBuild.fullDisplayName})",
-            body: "Check console output at: ${env.BUILD_URL}/console" + "\n")
+            body: "Hello Teams+"+"\n" +"Le Build a reussie!"+ "\n")
 }
 
 String getEnvName(String branchName) {
