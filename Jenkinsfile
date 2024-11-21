@@ -24,31 +24,15 @@ node {
 
         stage('Sonarqube Analysis') {
             withSonarQubeEnv('SonarQubeLocalServer') {
-                sh "mvn sonar:sonar -Dsonar.report.export.path=target/sonar-report.json -Dintegration-tests.skip=true -Dmaven.test.failure.ignore=true"
+                sh " mvn sonar:sonar -Dintegration-tests.skip=true -Dmaven.test.failure.ignore=true"
             }
-            timeout(time: 5, unit: 'MINUTES') {
-                def qg = waitForQualityGate()
+            timeout(time: 1, unit: 'MINUTES') {
+                def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
                 if (qg.status != 'OK') {
-                    error "Pipeline arrêté à cause de l'échec de la Quality Gate : ${qg.status}"
+                    error "Pipeline aborted due to quality gate failure: ${qg.status}"
                 }
             }
         }
-
-        stage('Archive Report') {
-            archiveArtifacts artifacts: 'target/sonar-report.json', allowEmptyArchive: true
-        }
-
-//         stage('Sonarqube Analysis') {
-//             withSonarQubeEnv('SonarQubeLocalServer') {
-//                 sh " mvn sonar:sonar -Dintegration-tests.skip=true -Dmaven.test.failure.ignore=true"
-//             }
-//             timeout(time: 1, unit: 'MINUTES') {
-//                 def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
-//                 if (qg.status != 'OK') {
-//                     error "Pipeline aborted due to quality gate failure: ${qg.status}"
-//                 }
-//             }
-//         }
 
         stage("Image Prune") {
             imagePrune(CONTAINER_NAME)
@@ -92,31 +76,11 @@ def pushToImage(containerName, tag, dockerUser, dockerPassword) {
 }
 
 def sendEmail(recipients) {
-    def buildStatus = currentBuild.currentResult ?: 'SUCCESS'
-    def buildMessage = buildStatus == 'SUCCESS' ? 'Le Build a réussi!' : 'Le Build a échoué.'
-
-    if (fileExists('target/sonar-report.json')) {
-        mail(
+    mail(
             to: recipients,
-            subject: "Build ${env.BUILD_NUMBER} - ${buildStatus} - (${currentBuild.fullDisplayName})",
-            body: "Bonjour,\n\n${buildMessage}\n\nConsultez le rapport SonarQube joint pour plus de détails.\n",
-            attachments: 'target/sonar-report.json'
-        )
-    } else {
-        mail(
-            to: recipients,
-            subject: "Build ${env.BUILD_NUMBER} - ${buildStatus} - (${currentBuild.fullDisplayName})",
-            body: "Bonjour,\n\n${buildMessage}\n\nLe rapport SonarQube n'a pas été généré.\n"
-        )
-    }
+            subject: "Build ${env.BUILD_NUMBER} - ${currentBuild.currentResult} - (${currentBuild.fullDisplayName})",
+            body: "Hello Teams+"+"\n" +"Le Build a reussie!"+ "\n")
 }
-
-// def sendEmail(recipients) {
-//     mail(
-//             to: recipients,
-//             subject: "Build ${env.BUILD_NUMBER} - ${currentBuild.currentResult} - (${currentBuild.fullDisplayName})",
-//             body: "Hello Teams+"+"\n" +"Le Build a reussie!"+ "\n")
-// }
 
 String getEnvName(String branchName) {
     if (branchName == 'main') {
