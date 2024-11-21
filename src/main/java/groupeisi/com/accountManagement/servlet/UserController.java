@@ -4,17 +4,17 @@ import groupeisi.com.accountManagement.entity.User;
 import groupeisi.com.accountManagement.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/users")
 @Tag(name = "Gestion Account Controller", description = "Permet de gérer les comptes")
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @Operation(summary = "pour obtenir tout les utilisateurs")
     @GetMapping
@@ -46,4 +46,3 @@ public class UserController {
         userService.deleteUser(id);
     }
 }
-// test
