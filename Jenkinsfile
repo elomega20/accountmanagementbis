@@ -48,6 +48,13 @@ node {
             }
         }
 
+        stage('Run App') {
+            withCredentials([usernamePassword(credentialsId: 'dockerhubcredentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                runApp(CONTAINER_NAME, CONTAINER_TAG, USERNAME, HTTP_PORT, ENV_NAME)
+
+            }
+        }
+
     } finally {
         deleteDir()
         sendEmail(EMAIL_RECIPIENTS);
@@ -73,6 +80,12 @@ def pushToImage(containerName, tag, dockerUser, dockerPassword) {
     sh "docker tag $containerName:$tag $dockerUser/$containerName:$tag"
     sh "docker push $dockerUser/$containerName:$tag"
     echo "Image push complete"
+}
+
+ef runApp(containerName, tag, dockerHubUser, httpPort, envName) {
+    sh "docker pull $dockerHubUser/$containerName:$tag"
+    sh "docker run --rm --env SPRING_ACTIVE_PROFILES=$envName -d -p $httpPort:$httpPort --name $containerName $dockerHubUser/$containerName:$tag"
+    echo "Application started on port: ${httpPort} (http)"
 }
 
 def sendEmail(recipients) {
